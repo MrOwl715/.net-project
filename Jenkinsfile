@@ -40,6 +40,27 @@ pipeline {
 		}
 	}
 
+	stage ('Publish') {
+		steps {
+			echo 'public 2 runnig folder'
+		//iisreset /stop // stop iis de ghi de file 
+			bat 'xcopy "%WORKSPACE%\\publish" /E /Y /I /R "c:\\wwwroot\\.net-project"'
+ 		}
+	}
+
+		stage('Deploy to IIS') {
+            steps {
+                powershell '''
+               
+                # Tạo website nếu chưa có
+                Import-Module WebAdministration
+                if (-not (Test-Path IIS:\\Sites\\.net-project)) {
+                    New-Website -Name "MySite" -Port 85 -PhysicalPath "c:\\wwwroot\\.net-project"
+                }
+                '''
+            }
+        } // end deploy iis
+
 
 
 
